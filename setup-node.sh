@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+#TODO convert this script to task runner and use bootstrap file to install task runner.
+
 # Remove leading and trailing whitespace chars.
 trim() {
     local var=$@
