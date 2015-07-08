@@ -31,7 +31,7 @@ vagrant ssh <projectname>-app
 ```
 
 ## Git commands to work with submodules
-
+  
 ```sh
 git submodule add <repo path> [folder name]
 
@@ -41,7 +41,5 @@ git submodule foreach --recursive git fetch
 git submodule foreach git merge origin master
 or
 git submodule foreach --recursive git pull origin master (is equivalent to a fetch and then merge)
-
-
 ```
 

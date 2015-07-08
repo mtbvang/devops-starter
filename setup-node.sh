@@ -38,6 +38,7 @@ setupVagrantFile() {
 	sed -i "s+<dotfilesDir>+${DEVOPS_DIR_NAME}/dotfiles+g" Vagrantfile
 	sed -i "s+<vagrantDir>+${DEVOPS_DIR_NAME}/vagrant+g" Vagrantfile
 	sed -i "s+<provisioningDir>+${DEVOPS_DIR_NAME}/provisioning+g" Vagrantfile
+	sed -i "s+<dockerImage>+${DOCKER_IMAGE}+g" Vagrantfile
 }
 
 runConsul() {
@@ -57,6 +58,7 @@ runConsul() {
 PROJECT_NAME=$(trim ${1:-app})
 PORT_OFFSET=$(trim ${2:-0})
 GUEST_APP_PORT=$(trim ${3:-1337})
+DOCKER_IMAGE=$(trim ${4:-vagrant-node:wheezy})
 
 init
 initGit
