@@ -1,0 +1,12 @@
+{
+  "hooks": {
+    "grunt": false
+  },
+  "generators": {
+    "modules": {
+      "bower": "sails-generate-bower-gulp",
+      "reactjs": "sails-generate-reactjs-gulp",
+      "test": "/code/sails-generate-react-gulp"
+    }
+  }
+}

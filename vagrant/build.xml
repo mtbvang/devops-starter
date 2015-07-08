@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="devhost"
+         default="default"
+         phingVersion="2.8.0"
+         description="Test and build the puppet module. Note all test related targets need to be run from within the vagrant virtual machine.">
+
+	<property environment="env" />
+	<property name="build.dir" value="${project.basedir}" />
+
+	<property name="image.version" value="14.04" />
+	<property name="image.name" value="ubuntu-vagrant" />
+
+	<property name="option.localtime"
+	          value="/usr/share/zoneinfo/Europe/Copenhagen" />
+
+	<target name="default"
+	        description="Prints out available targets in this project.">
+		<exec command="phing -l" passthru="true" />
+		<echo msg="testing=${testing}" />
+	</target>
+
+	<target name="docker-start-consul" depends="docker-rm-consul"
+	        description="Pulls down and runs progrium/docker-consul container in single instance mode. Web UI on localhost:8500.">
+		<exec command="sudo nohup docker run -d -h node1 --name consul  -p 8300:8300  -p 8301:8301  -p 8301:8301/udp  -p 8302:8302  -p 8302:8302/udp  -p 8400:8400  -p 8500:8500  -p 172.17.42.1:53:53/udp  progrium/consul -server -bootstrap -ui-dir /ui &amp;"
+		      passthru="true" />
+	</target>
+
+	<target name="docker-rm-consul"
+	        description="Removes progrium/docker-consul container.">
+		<exec command="docker stop consul; docker rm consul" passthru="true" />
+	</target>
+
+</project>
