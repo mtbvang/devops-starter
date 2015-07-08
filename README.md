@@ -12,8 +12,22 @@ chmod +x setup-node.sh
 
 The <portoffset> allows you to map multiple host machine ports to the one port number that the application run on on the guest container.
 
+Start the containers.
+
 ```sh
 vagrant up --no-parallel
+```
+
+Get the container names.
+
+```sh
+vagrant status
+```
+
+You can ssh into them using the names listed in the vagrant status command.
+
+```sh
+vagrant ssh <projectname>-app
 ```
 
 ## Git commands to work with submodules
