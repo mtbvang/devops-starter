@@ -4,3 +4,6 @@
 [submodule "vagrant"]
 	path = vagrant
 	url = https://github.com/mtbvang/vagrant-starter
+[submodule "provisioning"]
+	path = provisioning
+	url = https://github.com/mtbvang/provisioning.git
