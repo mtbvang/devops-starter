@@ -1,0 +1,6 @@
+[submodule "docker-images"]
+	path = docker-images
+	url = https://github.com/mtbvang/docker-images
+[submodule "vagrant"]
+	path = vagrant
+	url = https://github.com/mtbvang/vagrant-starter
