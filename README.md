@@ -2,20 +2,11 @@
 
 A quick way to add devops related tooling to projects.
 
-Add this project as a submodule to a project. From the root of your project run:
-
 ```sh
-git submodule add https://github.com/mtbvang/devops-starter.git devops
-
-git submodule update --init --recursive
-
-git submodule foreach --recursive git pull origin master
-
-cd devops/vagrant && git checkout split-containers
-
-cp devops/vagrant/Vagrantfile.template Vagrantfile
+sudo curl -O https://raw.githubusercontent.com/mtbvang/devops-starter/master/setup.sh
+sudo chmod +x setup.sh
+sudo ./setup-node.sh <projectname> <portoffset> (e.g. './setup.sh test-app 1' will result in a node application running on port 1338. Look at the setup-node.sh file for details of other arguments. )
 ```
-Update the variables under "# UPDATE these project specific details." and vagrant up.
 
 ```sh
 vagrant up
