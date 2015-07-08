@@ -26,5 +26,8 @@ git submodule foreach git merge origin master
 or
 git submodule foreach --recursive git pull origin master (is equivalent to a fetch and then merge)
 
+git submodule foreach --recursive git pull origin master
+
+
 ```
 
