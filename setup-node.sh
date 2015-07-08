@@ -26,7 +26,7 @@ installDevops() {
 # Copy over Vagrantfile template and do substitutioins.
 setupVagrantFile() {
 	cd ${PROJECT_ROOT}
-	cp devops/vagrant/Vagrantfile.template Vagrantfile
+	cp devops/vagrant/Vagrantfile.node.template Vagrantfile
 	sed -i "s/<projectName>/${PROJECT_NAME}/g" Vagrantfile
 	sed -i "s/<portOffset>/${PORT_OFFSET}/g" Vagrantfile
 	sed -i "s/<guestAppPort>/${GUEST_APP_PORT}/g" Vagrantfile
