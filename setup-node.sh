@@ -8,22 +8,34 @@ trim() {
     echo -n "$var"
 }
 
+init() {
+	PROJECT_ROOT=$(cd `dirname ${0}`; pwd)
+	DEVOPS_DIR_NAME=devops
+}
 
+# Clone devops-starter as a submodule.
 installDevops() {
 	git submodule add https://github.com/mtbvang/devops-starter.git devops
 
 	git submodule update --init --recursive
 	
 	git submodule foreach --recursive git pull origin master
-	
-	cd devops/vagrant && git checkout split-containers
+	#Change are not being made in the master branch.
+	cd ${PROJECT_ROOT}/${DEVOPS_DIR_NAME}/vagrant && git checkout split-containers
 	
 	
 }
 
+# Copy over Vagrantfile template and do substitutioins.
 setupVagrantFile() {
+	cd ${PROJECT_ROOT}
 	cp devops/vagrant/Vagrantfile.template Vagrantfile
-	#sed -i 's/<projectName>/${PROJECT_NAME}/g' Vagrantfile
+	sed -i "s/<projectName>/${PROJECT_NAME}/g" Vagrantfile
+	sed -i "s/<portOffset>/${PORT_OFFSET}/g" Vagrantfile
+	sed -i "s/<guestAppPort>/${GUEST_APP_PORT}/g" Vagrantfile
+	
+	VAGRANT_STARTER_DIR="${DEVOPS_DIR_NAME}/vagrant"
+	sed -i "s+<vagrantStarterDir>+${VAGRANT_STARTER_DIR}+g" Vagrantfile
 }
 
 initGit() {
@@ -34,6 +46,7 @@ PROJECT_NAME=$(trim ${1:-app})
 PORT_OFFSET=$(trim ${2:-0})
 GUEST_APP_PORT=$(trim ${3:-1337})
 
+init
 initGit
 installDevops
 setupVagrantFile
