@@ -8,10 +8,12 @@ chmod +x setup-node.sh
 ./setup-node.sh <projectname> <portoffset>
 ```
 
-'./setup-node.sh test-app 1' will result in a node application running on port 1338. Look at the setup-node.sh file for details of other arguments.
+'./setup-node.sh test-app 1' will result in a node application running on port 1338. Look at the setup-node.sh file for details of other arguments. 
+
+The <portoffset> allows you to map multiple host machine ports to the one port number that the application run on on the guest container.
 
 ```sh
-vagrant up
+vagrant up --no-parallel
 ```
 
 ## Git commands to work with submodules

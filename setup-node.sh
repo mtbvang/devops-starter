@@ -11,7 +11,6 @@ trim() {
 init() {
 	PROJECT_ROOT=$(cd `dirname ${0}`; pwd)
 	DEVOPS_DIR_NAME=devops
-	DEVOPS_DIR=${DEVOPS_DIR_NAME}/devops
 }
 
 # Clone devops-starter as a submodule.
@@ -30,9 +29,9 @@ setupVagrantFile() {
 	sed -i "s/<projectName>/${PROJECT_NAME}/g" Vagrantfile
 	sed -i "s/<portOffset>/${PORT_OFFSET}/g" Vagrantfile
 	sed -i "s/<guestAppPort>/${GUEST_APP_PORT}/g" Vagrantfile
-	sed -i "s+<dotfilesDir>+${DEVOPS_DIR}/dotfiles+g" Vagrantfile
-	sed -i "s+<vagrantDir>+${DEVOPS_DIR}/vagrant+g" Vagrantfile
-	sed -i "s+<provisioningDir>+${DEVOPS_DIR}/provisioning+g" Vagrantfile
+	sed -i "s+<dotfilesDir>+${DEVOPS_DIR_NAME}/dotfiles+g" Vagrantfile
+	sed -i "s+<vagrantDir>+${DEVOPS_DIR_NAME}/vagrant+g" Vagrantfile
+	sed -i "s+<provisioningDir>+${DEVOPS_DIR_NAME}/provisioning+g" Vagrantfile
 }
 
 initGit() {
