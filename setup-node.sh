@@ -13,6 +13,10 @@ init() {
 	DEVOPS_DIR_NAME=devops
 }
 
+initGit() {
+	git init	
+}
+
 # Clone devops-starter as a submodule.
 installDevops() {
 	git submodule add https://github.com/mtbvang/devops-starter.git devops
@@ -34,9 +38,19 @@ setupVagrantFile() {
 	sed -i "s+<provisioningDir>+${DEVOPS_DIR_NAME}/provisioning+g" Vagrantfile
 }
 
-initGit() {
-	git init	
+runConsul() {
+	CONSUL_RUNNING=$(docker ps -a | grep consul)
+	echo "CONSUL_RUNNING=${CONSUL_RUNNING}"
+	if [ "" == "$CONSUL_RUNNING" ]; then
+		echo "Consul container not installed. Installing."
+		docker run -d -h node1 --name consul  -p 8300:8300  -p 8301:8301  -p 8301:8301/udp  -p 8302:8302  -p 8302:8302/udp  -p 8400:8400  -p 8500:8500  -p 172.17.42.1:53:53/udp  progrium/consul -server -bootstrap -ui-dir /ui
+	else 
+		echo -e "Consul already install:\n ${CONSUL_RUNNING}"
+	fi 
+	
+	
 }
+
 
 PROJECT_NAME=$(trim ${1:-app})
 PORT_OFFSET=$(trim ${2:-0})
@@ -46,3 +60,4 @@ init
 initGit
 installDevops
 setupVagrantFile
+runConsul
