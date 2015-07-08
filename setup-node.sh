@@ -19,11 +19,7 @@ installDevops() {
 
 	git submodule update --init --recursive
 	
-	git submodule foreach --recursive git pull origin master
-	#Change are not being made in the master branch.
-	cd ${PROJECT_ROOT}/${DEVOPS_DIR_NAME}/vagrant && git checkout split-containers
-	
-	
+	git submodule foreach --recursive git pull origin master	
 }
 
 # Copy over Vagrantfile template and do substitutioins.
