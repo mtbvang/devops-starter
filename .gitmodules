@@ -7,3 +7,6 @@
 [submodule "provisioning"]
 	path = provisioning
 	url = https://github.com/mtbvang/provisioning.git
+[submodule "dotfiles"]
+	path = dotfiles
+	url = https://github.com/mtbvang/dotfiles
