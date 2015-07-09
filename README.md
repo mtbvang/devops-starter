@@ -58,5 +58,8 @@ git submodule foreach --recursive git fetch
 git submodule foreach git merge origin master
 or
 git submodule foreach --recursive git pull origin master (is equivalent to a fetch and then merge)
+
+git pull --recurse-submodules=on-demand
+git push --recurse-submodules=on-demand
 ```
 
