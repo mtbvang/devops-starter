@@ -34,6 +34,16 @@ You can ssh into them using the names listed in the vagrant status command.
 vagrant ssh <projectname>-app
 ```
 
+## Manually adding submodule
+
+The setup-node.sh script runs the following commands to add this starter as a submodule.
+
+```sh
+git submodule add https://github.com/mtbvang/devops-starter.git devops
+git submodule update --init --recursive
+git submodule foreach --recursive git pull origin master  
+```
+
 ## Creating application
 
 After vagrant ssh'ing into the <projectname>-app container create the application project using the relevant script to scaffold out the project.
