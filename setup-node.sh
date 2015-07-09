@@ -54,6 +54,10 @@ runConsul() {
 	
 }
 
+setupSails() {
+	cp devops/provisioning/shell/node/.sailsrc .sailsrc
+}
+
 
 PROJECT_NAME=$(trim ${1:-app})
 PORT_OFFSET=$(trim ${2:-0})
@@ -65,3 +69,4 @@ initGit
 installDevops
 setupVagrantFile
 runConsul
+sailsSetup
