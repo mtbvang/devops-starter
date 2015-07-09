@@ -1,6 +1,10 @@
 # devops-starter
 
-A quick way to add devops related tooling to projects. Get the setup file for the kind of project you are starting. For example for node projects:
+A quick way to add devops related tooling to projects. 
+
+## Getting started
+
+Get the setup file for the kind of project you are starting. For example for node projects:
 
 ```sh
 curl -O https://raw.githubusercontent.com/mtbvang/devops-starter/master/setup-node.sh
@@ -29,6 +33,19 @@ You can ssh into them using the names listed in the vagrant status command.
 ```sh
 vagrant ssh <projectname>-app
 ```
+
+## Creating application
+
+After vagrant ssh'ing into the <projectname>-app container create the application project using the relevant script to scaffold out the project.
+
+### Node (Sails, Reactjs)
+
+The standard node stack 'm using is Sails + Reactjs. Run the setup script to scaffold the application.
+
+```sh
+cd /vagrant
+```
+
 
 ## Git commands to work with submodules
   
