@@ -10,7 +10,7 @@ trim() {
 
 init() {
 	sudo apt-get update
-	sudo apt-get intsall -yq curl
+	sudo apt-get install -yq curl
 }
 
 # Install npm if it isn't
