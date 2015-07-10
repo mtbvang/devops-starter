@@ -56,8 +56,34 @@ The standard node stack 'm using is Sails + Reactjs. Run the setup script to sca
 cd /vagrant
 ```
 
+## Working with git submodules
 
-## Git commands to work with submodules
+The submodule is it's own repo/work-area, with its own .git directory.
+
+So, first commit/push your submodule's changes:
+
+```sh
+cd path/to/submodule
+git add <stuff>
+git commit -m "comment"
+git push
+```
+Then tell your main project to track the updated version:
+
+```sh
+cd /main/project
+git add path/to/submodule
+git commit -m "updated my submodule"
+git push
+```
+
+To push all submodules in one go from the parent repo:
+
+```sh
+git push --recurse-submodules=on-demand
+```
+
+### Git commands to work with submodules
   
 ```sh
 git submodule add <repo path> [folder name]
@@ -71,5 +97,6 @@ git submodule foreach --recursive git pull origin master (is equivalent to a fet
 
 git pull --recurse-submodules=on-demand
 git push --recurse-submodules=on-demand
+git submodule foreach --recursive git checkout master
 ```
 
