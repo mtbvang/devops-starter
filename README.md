@@ -41,7 +41,8 @@ The setup-node.sh script runs the following commands to add this starter as a su
 ```sh
 git submodule add https:// github.com/mtbvang/devops-starter.git devops
 git submodule update --init --recursive
-git submodule foreach --recursive git pull origin master  
+git submodule foreach --recursive git pull origin master
+git submodule foreach --recursive git checkout master
 ```
 
 ## Creating application
