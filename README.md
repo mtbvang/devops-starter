@@ -77,31 +77,44 @@ git commit -m "updated my submodule"
 git push
 ```
 
-To push and pull all submodules in one go from the parent repo that contains the submodules. Note these commands do not retrieve the latest head from the origin master. They retrieve
+To push and pull all submodules in one go . Note these commands do not pull the latest head from the origin master. They retrieve from the project that the submodules are contained.
 
 ```sh
 git pull --recurse-submodules=on-demand
+git submodule update --recursive
 git push --recurse-submodules=on-demand
 ```
 
-### Updating git submodules in projects and pushing to origin master
+The next section covers pulling from the origin of the submodules.
 
-After cloning the repository containing your submodules, the following command will checkout the master branch of all submodules in one go:
+### Pulling and pushing git submodules commits from submodule origin in projects
+
+After cloning the repository containing your submodules, the following command will checkout the master branch of all submodules in one go. Other wise the submodules will will not be pointing to any branch.
 
 ```sh
 git submodule foreach --recursive git checkout master
 ```
 
-To get the 
+To get the latest head/commits from the submodule origin.
+
 ```sh
 git submodule foreach git pull origin master
 ```
-This is supposed to be equivalent to these two commands in git version > 1.7.3
+This is equivalent to these two commands in git version > 1.7.3
 
 ```sh
 git pull --recurse-submodules
 git submodule update --recursive
 ```
+
+Make changes and then git add, commit and push as normal and these submodule changes will be included.
+
+```sh
+git add .
+git commit -m "example commit messaage"
+git push
+```
+ 
 
 ### Git commands to work with submodules
   
