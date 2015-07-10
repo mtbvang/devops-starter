@@ -7,7 +7,7 @@ A quick way to add devops related tooling to projects.
 Get the setup file for the kind of project you are starting. For example for node projects:
 
 ```sh
-curl -O https://raw.githubusercontent.com/mtbvang/devops-starter/master/setup-node.sh
+curl -O https:// raw.githubusercontent.com/mtbvang/devops-starter/master/setup-node.sh
 chmod +x setup-node.sh
 ./setup-node.sh <projectname> <portoffset>
 ```
@@ -39,7 +39,7 @@ vagrant ssh <projectname>-app
 The setup-node.sh script runs the following commands to add this starter as a submodule.
 
 ```sh
-git submodule add https://github.com/mtbvang/devops-starter.git devops
+git submodule add https:// github.com/mtbvang/devops-starter.git devops
 git submodule update --init --recursive
 git submodule foreach --recursive git pull origin master  
 ```
@@ -77,10 +77,30 @@ git commit -m "updated my submodule"
 git push
 ```
 
-To push all submodules in one go from the parent repo:
+To push and pull all submodules in one go from the parent repo that contains the submodules. Note these commands do not retrieve the latest head from the origin master. They retrieve
 
 ```sh
+git pull --recurse-submodules=on-demand
 git push --recurse-submodules=on-demand
+```
+
+### Updating git submodules in projects and pushing to origin master
+
+After cloning the repository containing your submodules, the following command will checkout the master branch of all submodules in one go:
+
+```sh
+git submodule foreach --recursive git checkout master
+```
+
+To get the 
+```sh
+git submodule foreach git pull origin master
+```
+This is supposed to be equivalent to these two commands in git version > 1.7.3
+
+```sh
+git pull --recurse-submodules
+git submodule update --recursive
 ```
 
 ### Git commands to work with submodules
@@ -99,4 +119,6 @@ git pull --recurse-submodules=on-demand
 git push --recurse-submodules=on-demand
 git submodule foreach --recursive git checkout master
 ```
+
+
 
