@@ -101,14 +101,19 @@ To get the latest head/commits from the submodule origin.
 ```sh
 git submodule foreach git pull origin master
 ```
-This is equivalent to these two commands in git version > 1.7.3
+This is equivalent to this in git version > 1.7.3
 
 ```sh
 git pull --recurse-submodules
+```
+
+Follow the pull with an update to see the pulled commits.
+
+```sh
 git submodule update --recursive
 ```
 
-Make changes and then git add, commit and push as normal and these submodule changes will be included.
+Git add, commit and push as normal and the submodule changes will be included.
 
 ```sh
 git add .
