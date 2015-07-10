@@ -4,34 +4,22 @@ A quick way to add devops related tooling to projects.
 
 ## Getting started
 
-Get the setup file for the kind of project you are starting. For example for node projects:
-
+Download the bootstrap script that installs npm, gulp and their required dependencies.
 ```sh
-curl -O https:// raw.githubusercontent.com/mtbvang/devops-starter/master/setup-node.sh
-chmod +x setup-node.sh
-./setup-node.sh <projectname> <portoffset>
+curl -O https:// raw.githubusercontent.com/mtbvang/devops-starter/master/bootstrap.sh
+chmod +x bootstrap.sh
 ```
 
-'./setup-node.sh test-app 1' will result in a node application running on port 1338. Look at the setup-node.sh file for details of other arguments. 
-
-The <portoffset> allows you to map multiple host machine ports to the one port number that the application run on on the guest container.
-
-Start the containers.
+There's a gulp task for bootstrapping a new project. Run it and pass in the parameters
 
 ```sh
-vagrant up --no-parallel
+gulp bootstrap --projectName exampleApp --vagrantPortOffset 13 --vagrantGuestAppPort 3000 --dockerImageApp vagrant-node
 ```
-
-Get the container names.
-
-```sh
-vagrant status
-```
-
-You can ssh into them using the names listed in the vagrant status command.
 
 ```sh
 vagrant ssh <projectname>-app
+cd /vagrant
+gulp sails:new
 ```
 
 ## Manually adding submodule
