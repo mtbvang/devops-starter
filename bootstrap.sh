@@ -42,7 +42,12 @@ installGulp() {
 
 downloadGulpFile() {
 	curl -O https://raw.githubusercontent.com/mtbvang/devops-starter/master/templates/gulpfile.js
+	SRC="projectName: 'app'"
+	DST="projectName: '${PROJECT_DIR_NAME}'"
+	sed -i "s/${SRC}/${DST}/g" gulpfile.js
 }
+
+PROJECT_DIR_NAME=${PWD##*/}
 
 init
 installNPM
