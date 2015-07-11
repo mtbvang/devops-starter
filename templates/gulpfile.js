@@ -75,5 +75,13 @@ gulp.task('bootstrap:vagrantfile', shell.task(['cp devops/vagrant/Vagrantfile.no
 
 gulp.task('vagrant:up', shell.task([ 'vagrant destroy -f && vagrant up --no-parallel', ]))
 
-gulp.task('sails:new', shell.task([ 'sails new' + options.projectName, ]))                                
+gulp.task('sails:new', shell.task([ 'sails new app', 
+                                    'cp ' + options.devopsDirName + '/dotfiles/.sailsrc-app app/.sailsrc'
+                                    ]))     
+                                    
+gulp.task('sails:reactjs', ['sails:new'], shell.task([ 'sails generate reactjs ' + options.projectName,
+                                    'sails generate bower',
+                                    'bower install',
+                                    'npm install'
+                                    ], {cwd: 'app'}))                               
                                       
