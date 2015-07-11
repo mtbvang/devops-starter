@@ -19,7 +19,7 @@ gulp bootstrap --projectName exampleApp --vagrantPortOffset 13 --vagrantGuestApp
 ```sh
 vagrant ssh <projectname>-app
 cd /vagrant
-gulp sails:new
+gulp sails:new --force
 ```
 
 ## Manually adding submodule
