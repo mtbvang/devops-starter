@@ -15,12 +15,14 @@ var minimist = require('minimist');
 var knownOptions = {
   string: 'env',
   string: 'projectName',
+  string: 'appDirName',
   string: 'vagrantPortOffset', 
   string: 'vagrantGuestAppPort',
   string: 'devopsDirName',
   string: 'dockerImageApp',
   default: { env: process.env.NODE_ENV || 'development',
-  	projectName: 'app',
+  	projectName: 'rcftool',
+  	appDirName: 'app',
   	vagrantPortOffset: '0',
   	vagrantGuestAppPort: '1337',
   	devopsDirName: 'devops',
@@ -66,6 +68,7 @@ gulp.task('bootstrap:devops', shell.task(['git submodule add https://github.com/
                                         	
                                         	'git submodule foreach --recursive git checkout master'], 
                                         	{ignoreErrors : true}))
+                                                                               	
 
 gulp.task('bootstrap:vagrantfile', shell.task(['cp devops/vagrant/Vagrantfile.node.template Vagrantfile',
                                              	'sed -i "s/<projectName>/' + options.projectName + '/g" Vagrantfile',
@@ -76,16 +79,16 @@ gulp.task('bootstrap:vagrantfile', shell.task(['cp devops/vagrant/Vagrantfile.no
                                             	'sed -i "s+<provisioningDir>+' + options.devopsDirName + '/provisioning+g" Vagrantfile',
                                             	'sed -i "s+<dockerImage>+' + options.dockerImageApp + '+g" Vagrantfile' ]))
 
-gulp.task('vagrant:up', shell.task([ 'vagrant destroy -f && vagrant up --no-parallel' ]))
-
-gulp.task('sails:new', shell.task([ 'sails new app', 
+gulp.task('bootstrap:app', shell.task([ 'vagrant destroy -f && vagrant up --no-parallel',
+                                        'vagrant ssh ' + options.projectName + '-app -- -t \'cd /vagrant; gulp sails:generate:reactjs\'']))
+                                        
+gulp.task('sails:new', shell.task([ 'sails new ' + options.appDirName, 
                                     'cp ' + options.devopsDirName + '/dotfiles/.sailsrc-app app/.sailsrc'
                                     ]))     
                                     
-gulp.task('sails:reactjs', ['sails:new'], shell.task([ 'sails generate reactjs ' + options.projectName + ' --force',
+gulp.task('sails:generate:reactjs', ['sails:new'], shell.task([ 'sails generate reactjs ' + options.projectName + ' --force',
                                     'sails generate bower',
                                     'bower install',
-                                    'npm install',
-                                    'sails lift'
+                                    'npm install'
                                     ], {cwd: 'app'}))                               
                                       
