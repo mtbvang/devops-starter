@@ -53,6 +53,9 @@ gulp
 
 gulp.task('bootstrap', [ 'git:init', 'bootstrap:devops', 'bootstrap:vagrantfile', 'consul:start', 'vagrant:up' ]);
 				
+gulp.task('bootstrap:clean', shell.task([ 'vagrant destroy -f',
+                                          'rm Vagrantfile']))
+
 gulp.task('git:init', shell.task([ 'git init', ]))
 
 gulp.task('bootstrap:devops', shell.task(['git submodule add https://github.com/mtbvang/devops-starter.git devops', 
@@ -73,15 +76,16 @@ gulp.task('bootstrap:vagrantfile', shell.task(['cp devops/vagrant/Vagrantfile.no
                                             	'sed -i "s+<provisioningDir>+' + options.devopsDirName + '/provisioning+g" Vagrantfile',
                                             	'sed -i "s+<dockerImage>+' + options.dockerImageApp + '+g" Vagrantfile' ]))
 
-gulp.task('vagrant:up', shell.task([ 'vagrant destroy -f && vagrant up --no-parallel', ]))
+gulp.task('vagrant:up', shell.task([ 'vagrant destroy -f && vagrant up --no-parallel' ]))
 
 gulp.task('sails:new', shell.task([ 'sails new app', 
                                     'cp ' + options.devopsDirName + '/dotfiles/.sailsrc-app app/.sailsrc'
                                     ]))     
                                     
-gulp.task('sails:reactjs', ['sails:new'], shell.task([ 'sails generate reactjs ' + options.projectName,
+gulp.task('sails:reactjs', ['sails:new'], shell.task([ 'sails generate reactjs ' + options.projectName + ' --force',
                                     'sails generate bower',
                                     'bower install',
-                                    'npm install'
+                                    'npm install',
+                                    'sails lift'
                                     ], {cwd: 'app'}))                               
                                       
