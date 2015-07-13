@@ -20,14 +20,14 @@ var knownOptions = {
   string: 'vagrantPortOffset', 
   string: 'vagrantGuestAppPort',
   string: 'devopsDirName',
-  string: 'dockerImageApp',
+  string: 'appType',
   default: { env: process.env.NODE_ENV || 'development',
   	projectName: 'app',
   	appDirName: 'app',
   	vagrantPortOffset: '0',
   	vagrantGuestAppPort: '1337',
   	devopsDirName: 'devops',
-  	dockerImageApp: 'vagrant-node'}
+  	appType: 'node'} //[node | node-r]
 };
 
 var options = minimist(process.argv.slice(2), knownOptions);
@@ -49,7 +49,7 @@ gulp.task('consul:start', ['consul:rm'],
 		shell.task(["docker run -d -h node1 --name consul  -p 8300:8300  -p 8301:8301  -p 8301:8301/udp  -p 8302:8302  -p 8302:8302/udp  -p 8400:8400  -p 8500:8500  -p 172.17.42.1:53:53/udp  progrium/consul -server -bootstrap -ui-dir /ui",])
 );
 				
-gulp.task('bootstrap', function(cb) {
+gulp.task('bootstrap', function(cb) {		
 	runSequence('git:init', 
 	            'bootstrap:devops', 
 	            'bootstrap:vagrantfile', 
@@ -83,18 +83,17 @@ gulp.task('bootstrap:devops',
              	{ignoreErrors : true}
 	)
 );
-                                                                               	
 
 gulp.task('bootstrap:vagrantfile', 
-	shell.task([
-	            'cp devops/vagrant/templates/Vagrantfile.node Vagrantfile',
+	shell.task(['echo options.appType: ' + options.appType,
+	            'cp devops/vagrant/templates/Vagrantfile-' + options.appType + ' Vagrantfile',
 					   	'sed -i "s/<projectName>/' + options.projectName + '/g" Vagrantfile',
 					  	'sed -i "s/<portOffset>/' + options.vagrantPortOffset + '/g" Vagrantfile',
 					  	'sed -i "s/<guestAppPort>/' + options.vagrantGuestAppPort + '/g" Vagrantfile',
 					  	'sed -i "s+<dotfilesDir>+' + options.devopsDirName + '/dotfiles+g" Vagrantfile',
 					  	'sed -i "s+<vagrantDir>+' + options.devopsDirName + '/vagrant+g" Vagrantfile',
 					  	'sed -i "s+<provisioningDir>+' + options.devopsDirName + '/provisioning+g" Vagrantfile',
-					  	'sed -i "s+<dockerImage>+' + options.dockerImageApp + '+g" Vagrantfile',
+					  	'sed -i "s+<dockerImage>+' + 'vagant-' + options.appType + '+g" Vagrantfile',
 					  	]
 	)
 );

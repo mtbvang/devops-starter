@@ -14,14 +14,23 @@ curl -O https://raw.githubusercontent.com/mtbvang/devops-starter/master/bootstra
 
 There's a gulp task for bootstrapping a new project. Run it and pass in any parameters you want to change e.g.
 ```sh
-gulp bootstrap --projectName exampleApp --vagrantPortOffset 13 --vagrantGuestAppPort 3000 --dockerImageApp vagrant-node
+gulp bootstrap --projectName exampleApp --appType node --vagrantPortOffset 0 --vagrantGuestAppPort 1337 
 ```
+
+projectName: default app
+appTypes: [node|node-r] default node
+vagrantPortOffset: default  0
+vagrantGuestAppPort: default 1337
+
+The bootstrap script will have created a ready to run application. All that's required is to ssh into the container and sails lift the application.
 
 ```sh
 vagrant ssh <projectname>-app
 cd /vagrant
-gulp sails:new --force
+sails lift
 ```
+
+It should now be accessible on the host via http://localhost:1337  or 1337 + vagrantPortOffset specified in the bootstrap command above.
 
 ## Manually adding submodule
 
@@ -32,18 +41,6 @@ git submodule add https:// github.com/mtbvang/devops-starter.git devops
 git submodule update --init --recursive
 git submodule foreach --recursive git pull origin master
 git submodule foreach --recursive git checkout master
-```
-
-## Creating application
-
-After vagrant ssh'ing into the <projectname>-app container create the application project using the relevant script to scaffold out the project.
-
-### Node (Sails, Reactjs)
-
-The standard node stack 'm using is Sails + Reactjs. Run the setup script to scaffold the application.
-
-```sh
-cd /vagrant
 ```
 
 ## Working with git submodules
