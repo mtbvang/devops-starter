@@ -25,16 +25,13 @@ installNPM() {
 	
 }
 
-npmInit() {
-	npm init -f
-	npm install --save gulp
-	npm install --save-dev gulp-shell@^0.4.2 gulp-task-listing@^1.0.1 gulp-util@^3.0.6	minimist@^1.1.1
-}
-
 installGulp() {
 	if ! foobar_loc="$(type -p "gulp")" || [ -z "$foobar_loc" ]; then
 		echo "gulp not installed. Installing."
 		sudo npm install --global gulp 
+		npm install --save gulp
+		npm install --save-dev gulp-shell@^0.4.2 gulp-task-listing@^1.0.1 gulp-util@^3.0.6	minimist@^1.1.1
+			
 	else
 		echo -e "gulp already install."
 	fi
@@ -52,5 +49,4 @@ PROJECT_DIR_NAME=${PWD##*/}
 init
 installNPM
 installGulp
-npmInit
 downloadGulpFile

@@ -60,6 +60,11 @@ gulp.task('bootstrap:clean', shell.task([ 'vagrant destroy -f',
 
 gulp.task('git:init', shell.task([ 'git init', ]))
 
+gulp.task('npm:init', shell.task([ 'npm config set init.author.name ${git config user.name}',
+                                   'npm config set init.author.email ${git config user.email}',
+                                   'npm config set init.license MIT',
+                                   'npm init', ]))
+
 gulp.task('bootstrap:devops', shell.task(['git submodule add https://github.com/mtbvang/devops-starter.git devops', 
 
                                         	'git submodule update --init --recursive',
@@ -70,14 +75,14 @@ gulp.task('bootstrap:devops', shell.task(['git submodule add https://github.com/
                                         	{ignoreErrors : true}))
                                                                                	
 
-gulp.task('bootstrap:vagrantfile', shell.task(['cp devops/vagrant/Vagrantfile.node.template Vagrantfile',
-                                             	'sed -i "s/<projectName>/' + options.projectName + '/g" Vagrantfile',
-                                            	'sed -i "s/<portOffset>/' + options.vagrantPortOffset + '/g" Vagrantfile',
-                                            	'sed -i "s/<guestAppPort>/' + options.vagrantGuestAppPort + '/g" Vagrantfile',
-                                            	'sed -i "s+<dotfilesDir>+' + options.devopsDirName + '/dotfiles+g" Vagrantfile',
-                                            	'sed -i "s+<vagrantDir>+' + options.devopsDirName + '/vagrant+g" Vagrantfile',
-                                            	'sed -i "s+<provisioningDir>+' + options.devopsDirName + '/provisioning+g" Vagrantfile',
-                                            	'sed -i "s+<dockerImage>+' + options.dockerImageApp + '+g" Vagrantfile' ]))
+gulp.task('bootstrap:vagrantfile', shell.task(['cp devops/vagrant/templates/Vagrantfile.node Vagrantfile',
+                                             	'sed -i "s/<%= projectName %>/' + options.projectName + '/g" Vagrantfile',
+                                            	'sed -i "s/<%= portOffset %>/' + options.vagrantPortOffset + '/g" Vagrantfile',
+                                            	'sed -i "s/<%= guestAppPort %>/' + options.vagrantGuestAppPort + '/g" Vagrantfile',
+                                            	'sed -i "s+<%= dotfilesDir %>+' + options.devopsDirName + '/dotfiles+g" Vagrantfile',
+                                            	'sed -i "s+<%= vagrantDir %>+' + options.devopsDirName + '/vagrant+g" Vagrantfile',
+                                            	'sed -i "s+<%= provisioningDir %>+' + options.devopsDirName + '/provisioning+g" Vagrantfile',
+                                            	'sed -i "s+<%= dockerImage %>+' + options.dockerImageApp + '+g" Vagrantfile' ]))
 
 gulp.task('bootstrap:app', shell.task([ 'vagrant destroy -f && vagrant up --no-parallel',
                                         'vagrant ssh ' + options.projectName + '-app -- -t \'cd /vagrant; gulp sails:generate:reactjs\'']))
