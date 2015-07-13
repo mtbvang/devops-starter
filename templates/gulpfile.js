@@ -40,7 +40,7 @@ gulp.task('heroku:setBuildPack',
 	shell
 		.task([
 			'heroku buildpacks:set https://github.com/heroku/heroku-buildpack-nodejs#v' + util.env.version
-				+ ' -a letregnskab', ]))
+				+ ' -a ' + options.projectName, ]))
 
 gulp.task('deploy:heroku', shell.task([ 'git subtree push --prefix app heroku master', ]))
 
@@ -53,7 +53,7 @@ gulp
 			.task([
 				"docker run -d -h node1 --name consul  -p 8300:8300  -p 8301:8301  -p 8301:8301/udp  -p 8302:8302  -p 8302:8302/udp  -p 8400:8400  -p 8500:8500  -p 172.17.42.1:53:53/udp  progrium/consul -server -bootstrap -ui-dir /ui", ]))
 
-gulp.task('bootstrap', [ 'git:init', 'bootstrap:devops', 'bootstrap:vagrantfile', 'consul:start', 'vagrant:up' ]);
+gulp.task('bootstrap', [ 'git:init', 'bootstrap:devops', 'bootstrap:vagrantfile', 'consul:start', 'bootstrap:app' ]);
 				
 gulp.task('bootstrap:clean', shell.task([ 'vagrant destroy -f',
                                           'rm Vagrantfile']))
@@ -86,8 +86,8 @@ gulp.task('sails:new', shell.task([ 'sails new ' + options.appDirName,
                                     'cp ' + options.devopsDirName + '/dotfiles/.sailsrc-app app/.sailsrc'
                                     ]))     
                                     
-gulp.task('sails:generate:reactjs', ['sails:new'], shell.task([ 'sails generate reactjs ' + options.projectName + ' --force',
-                                    'sails generate bower',
+gulp.task('sails:generate:reactjs', ['sails:new'], shell.task(['sails generate bower --force',
+                                    'sails generate reactjs ' + options.projectName + ' --force',
                                     'bower install',
                                     'npm install'
                                     ], {cwd: 'app'}))                               
