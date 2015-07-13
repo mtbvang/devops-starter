@@ -53,10 +53,8 @@ gulp
 		shell
 			.task([
 				"docker run -d -h node1 --name consul  -p 8300:8300  -p 8301:8301  -p 8301:8301/udp  -p 8302:8302  -p 8302:8302/udp  -p 8400:8400  -p 8500:8500  -p 172.17.42.1:53:53/udp  progrium/consul -server -bootstrap -ui-dir /ui", ]))
-
-gulp.task('bootstrap', [ 'git:init', 'bootstrap:devops', 'bootstrap:vagrantfile', 'consul:start', 'bootstrap:app' ]);
 				
-gulp.task('bootstrap2', function(cb) {
+gulp.task('bootstrap', function(cb) {
 	runSequence('git:init', 
 	            'bootstrap:devops', 
 	            'bootstrap:vagrantfile', 
