@@ -93,7 +93,7 @@ gulp.task('bootstrap:vagrantfile',
 					  	'sed -i "s+<dotfilesDir>+' + options.devopsDirName + '/dotfiles+g" Vagrantfile',
 					  	'sed -i "s+<vagrantDir>+' + options.devopsDirName + '/vagrant+g" Vagrantfile',
 					  	'sed -i "s+<provisioningDir>+' + options.devopsDirName + '/provisioning+g" Vagrantfile',
-					  	'sed -i "s+<dockerImage>+' + 'vagant-' + options.appType + '+g" Vagrantfile',
+					  	'sed -i "s+<dockerImage>+' + 'vagrant-' + options.appType + '+g" Vagrantfile',
 					  	]
 	)
 );
