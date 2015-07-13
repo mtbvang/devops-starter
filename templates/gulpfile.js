@@ -11,6 +11,8 @@ var taskListing = require('gulp-task-listing');
 var util = require('gulp-util');
 var minimist = require('minimist');
 var runSequence = require('run-sequence');
+var exec = require('child_process').exec;
+var run = require('gulp-run');
 
 
 var knownOptions = {
@@ -98,18 +100,18 @@ gulp.task('bootstrap:vagrantfile',
 	)
 );
 
-gulp.task('bootstrap:app', 
-	shell.task([
-	            'vagrant up --no-parallel',
-	            'vagrant ssh ' + options.projectName + '-app -- -t \'cd /vagrant; gulp sails:new sails:generate:reactjs\'',
-	            ])
-);
+gulp.task('bootstrap:app', function () {
+   run('vagrant up --no-parallel').exec();
+   run('vagrant ssh ' + options.projectName + '-app -c "cd /vagrant; gulp sails:new"').exec();
+   run('vagrant ssh ' + options.projectName + '-app -c "cd /vagrant; gulp sails:generate:reactjs"').exec();
+});
                                         
 gulp.task('sails:new', 
 	shell.task([ 
 	            'cp ' + options.devopsDirName + '/dotfiles/.sailsrc-karnith .sailsrc',
 	            'sails new ' + options.appDirName, 
               'cp ' + options.devopsDirName + '/dotfiles/.sailsrc-app app/.sailsrc',
+              'exit'
               ]
 	)
 );     
@@ -121,7 +123,7 @@ gulp.task('sails:generate:reactjs',
               'bower install',
               'npm install',
               ], 
-              {cwd: 'app'}
+              {cwd: 'app', ignoreErrors : true}
 	)
-);                               
+);                              
                                       
