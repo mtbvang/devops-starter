@@ -123,6 +123,8 @@ git submodule foreach --recursive git pull origin master (is equivalent to a fet
 git pull --recurse-submodules=on-demand
 git push --recurse-submodules=on-demand
 git submodule foreach --recursive git checkout master
+
+git submodule status --recursive
 ```
 
 

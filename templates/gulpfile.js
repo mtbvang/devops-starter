@@ -22,12 +22,12 @@ var knownOptions = {
   string: 'devopsDirName',
   string: 'appType',
   default: { env: process.env.NODE_ENV || 'development',
-  	projectName: 'app',
+  	projectName: 'devops-starter-testing',
   	appDirName: 'app',
   	vagrantPortOffset: '0',
   	vagrantGuestAppPort: '1337',
   	devopsDirName: 'devops',
-  	appType: 'node'} //[node | node-r]
+  	appType: 'node'} // [node | node-r]
 };
 
 var options = minimist(process.argv.slice(2), knownOptions);
@@ -101,19 +101,20 @@ gulp.task('bootstrap:vagrantfile',
 gulp.task('bootstrap:app', 
 	shell.task([
 	            'vagrant up --no-parallel',
-	            'vagrant ssh ' + options.projectName + '-app -- -t \'cd /vagrant; gulp sails:generate:reactjs\'',
+	            'vagrant ssh ' + options.projectName + '-app -- -t \'cd /vagrant; gulp sails:new sails:generate:reactjs\'',
 	            ])
 );
                                         
 gulp.task('sails:new', 
 	shell.task([ 
-	             'sails new ' + options.appDirName, 
-               'cp ' + options.devopsDirName + '/dotfiles/.sailsrc-app app/.sailsrc',
-               ]
+	            'cp ' + options.devopsDirName + '/dotfiles/.sailsrc-karnith .sailsrc',
+	            'sails new ' + options.appDirName, 
+              'cp ' + options.devopsDirName + '/dotfiles/.sailsrc-app app/.sailsrc',
+              ]
 	)
 );     
                                     
-gulp.task('sails:generate:reactjs', ['sails:new'], 
+gulp.task('sails:generate:reactjs',
 	shell.task([
 	            'sails generate bower --force',
               'sails generate reactjs ' + options.projectName + ' --force',
