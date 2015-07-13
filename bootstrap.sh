@@ -28,13 +28,13 @@ installNPM() {
 installGulp() {
 	if ! foobar_loc="$(type -p "gulp")" || [ -z "$foobar_loc" ]; then
 		echo "gulp not installed. Installing."
-		sudo npm install --global gulp 
-		npm install --save gulp
-		npm install --save-dev gulp-shell@^0.4.2 gulp-task-listing@^1.0.1 gulp-util@^3.0.6	minimist@^1.1.1
-			
+		sudo npm install --global gulp 			
 	else
-		echo -e "gulp already install."
+		echo -e "gulp already installed globally."
 	fi
+	echo -e "Install local npm packages."
+	npm install --save gulp
+	npm install --save-dev gulp-shell@^0.4.2 gulp-task-listing@^1.0.1 gulp-util@^3.0.6	minimist@^1.1.1
 }
 
 downloadGulpFile() {
