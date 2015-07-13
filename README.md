@@ -4,12 +4,12 @@ A quick way to add devops related tooling to projects.
 
 ## Getting started
 
-Download the bootstrap script that installs npm, gulp and their required dependencies.
+Download the bootstrap script that installs npm, gulp and their required dependencies and run it using:
 
 ```sh
-curl -O https://raw.githubusercontent.com/mtbvang/devops-starter/master/bootstrap.sh
-chmod +x bootstrap.sh
-./bootstrap.sh
+curl -O https://raw.githubusercontent.com/mtbvang/devops-starter/master/bootstrap.sh \
+&& chmod +x bootstrap.sh \
+&& ./bootstrap.sh
 ```
 
 There's a gulp task for bootstrapping a new project. Run it and pass in any parameters you want to change e.g.
