@@ -22,7 +22,7 @@ var knownOptions = {
   string: 'devopsDirName',
   string: 'dockerImageApp',
   default: { env: process.env.NODE_ENV || 'development',
-  	projectName: 'rcftool',
+  	projectName: 'app',
   	appDirName: 'app',
   	vagrantPortOffset: '0',
   	vagrantGuestAppPort: '1337',
@@ -38,21 +38,16 @@ gulp.task('help', taskListing);
 gulp.task('default', [ 'help' ]);
 
 gulp.task('heroku:setBuildPack',
-	shell
-		.task([
-			'heroku buildpacks:set https://github.com/heroku/heroku-buildpack-nodejs#v' + util.env.version
-				+ ' -a ' + options.projectName, ]))
+	shell.task(['heroku buildpacks:set https://github.com/heroku/heroku-buildpack-nodejs#v' + util.env.version + ' -a ' + options.projectName,])
+);
 
-gulp.task('deploy:heroku', shell.task([ 'git subtree push --prefix app heroku master', ]))
+gulp.task('deploy:heroku', shell.task([ 'git subtree push --prefix app heroku master', ]));
 
-gulp.task('consul:rm', shell.task([ "docker stop consul && docker rm consul" ], {ignoreErrors : true}))
+gulp.task('consul:rm', shell.task([ "docker stop consul && docker rm consul" ], {ignoreErrors : true}));
 
-gulp
-	.task(
-		'consul:start', ['consul:rm'],
-		shell
-			.task([
-				"docker run -d -h node1 --name consul  -p 8300:8300  -p 8301:8301  -p 8301:8301/udp  -p 8302:8302  -p 8302:8302/udp  -p 8400:8400  -p 8500:8500  -p 172.17.42.1:53:53/udp  progrium/consul -server -bootstrap -ui-dir /ui", ]))
+gulp.task('consul:start', ['consul:rm'],
+		shell.task(["docker run -d -h node1 --name consul  -p 8300:8300  -p 8301:8301  -p 8301:8301/udp  -p 8302:8302  -p 8302:8302/udp  -p 8400:8400  -p 8500:8500  -p 172.17.42.1:53:53/udp  progrium/consul -server -bootstrap -ui-dir /ui",])
+);
 				
 gulp.task('bootstrap', function(cb) {
 	runSequence('git:init', 
@@ -63,45 +58,70 @@ gulp.task('bootstrap', function(cb) {
 	            cb);
 });
 
-gulp.task('bootstrap:clean', shell.task([ 'vagrant destroy -f',
+gulp.task('bootstrap:clean', shell.task(['vagrant destroy -f',
                                           'rm Vagrantfile']))
 
-gulp.task('git:init', shell.task([ 'git init', ]))
+gulp.task('git:init', shell.task(['git init']));
 
-gulp.task('npm:init', shell.task([ 'npm config set init.author.name ${git config user.name}',
-                                   'npm config set init.author.email ${git config user.email}',
-                                   'npm config set init.license MIT',
-                                   'npm init', ]))
+gulp.task('npm:init', 
+	shell.task([
+	            'npm config set init.author.name ${git config user.name}',
+	            'npm config set init.author.email ${git config user.email}',
+	            'npm config set init.license MIT',
+	            'npm init',
+	            ]
+	)
+);
 
-gulp.task('bootstrap:devops', shell.task(['git submodule add https://github.com/mtbvang/devops-starter.git devops', 
-
-                                        	'git submodule update --init --recursive',
-                                        	
-                                        	'git submodule foreach --recursive git pull origin master',	
-                                        	
-                                        	'git submodule foreach --recursive git checkout master'], 
-                                        	{ignoreErrors : true}))
+gulp.task('bootstrap:devops', 
+	shell.task([
+	            'git submodule add https://github.com/mtbvang/devops-starter.git devops', 
+             	'git submodule update --init --recursive',
+             	'git submodule foreach --recursive git pull origin master',	
+             	'git submodule foreach --recursive git checkout master',
+             	], 
+             	{ignoreErrors : true}
+	)
+);
                                                                                	
 
-gulp.task('bootstrap:vagrantfile', shell.task(['cp devops/vagrant/templates/Vagrantfile.node Vagrantfile',
-                                             	'sed -i "s/<%= projectName %>/' + options.projectName + '/g" Vagrantfile',
-                                            	'sed -i "s/<%= portOffset %>/' + options.vagrantPortOffset + '/g" Vagrantfile',
-                                            	'sed -i "s/<%= guestAppPort %>/' + options.vagrantGuestAppPort + '/g" Vagrantfile',
-                                            	'sed -i "s+<%= dotfilesDir %>+' + options.devopsDirName + '/dotfiles+g" Vagrantfile',
-                                            	'sed -i "s+<%= vagrantDir %>+' + options.devopsDirName + '/vagrant+g" Vagrantfile',
-                                            	'sed -i "s+<%= provisioningDir %>+' + options.devopsDirName + '/provisioning+g" Vagrantfile',
-                                            	'sed -i "s+<%= dockerImage %>+' + options.dockerImageApp + '+g" Vagrantfile' ]))
+gulp.task('bootstrap:vagrantfile', 
+	shell.task([
+	            'cp devops/vagrant/templates/Vagrantfile.node Vagrantfile',
+					   	'sed -i "s/<projectName>/' + options.projectName + '/g" Vagrantfile',
+					  	'sed -i "s/<portOffset>/' + options.vagrantPortOffset + '/g" Vagrantfile',
+					  	'sed -i "s/<guestAppPort>/' + options.vagrantGuestAppPort + '/g" Vagrantfile',
+					  	'sed -i "s+<dotfilesDir>+' + options.devopsDirName + '/dotfiles+g" Vagrantfile',
+					  	'sed -i "s+<vagrantDir>+' + options.devopsDirName + '/vagrant+g" Vagrantfile',
+					  	'sed -i "s+<provisioningDir>+' + options.devopsDirName + '/provisioning+g" Vagrantfile',
+					  	'sed -i "s+<dockerImage>+' + options.dockerImageApp + '+g" Vagrantfile',
+					  	]
+	)
+);
 
-gulp.task('bootstrap:app', shell.task([ 'vagrant destroy -f && vagrant up --no-parallel',
-                                        'vagrant ssh ' + options.projectName + '-app -- -t \'cd /vagrant; gulp sails:generate:reactjs\'']))
+gulp.task('bootstrap:app', 
+	shell.task([
+	            'vagrant up --no-parallel',
+	            'vagrant ssh ' + options.projectName + '-app -- -t \'cd /vagrant; gulp sails:generate:reactjs\'',
+	            ])
+);
                                         
-gulp.task('sails:new', shell.task([ 'sails new ' + options.appDirName, 
-                                    'cp ' + options.devopsDirName + '/dotfiles/.sailsrc-app app/.sailsrc'
-                                    ]))     
+gulp.task('sails:new', 
+	shell.task([ 
+	             'sails new ' + options.appDirName, 
+               'cp ' + options.devopsDirName + '/dotfiles/.sailsrc-app app/.sailsrc',
+               ]
+	)
+);     
                                     
-gulp.task('sails:generate:reactjs', ['sails:new'], shell.task(['sails generate bower --force',
-                                    'sails generate reactjs ' + options.projectName + ' --force',
-                                    'bower install',
-                                    'npm install'
-                                    ], {cwd: 'app'}))                               
+gulp.task('sails:generate:reactjs', ['sails:new'], 
+	shell.task([
+	            'sails generate bower --force',
+              'sails generate reactjs ' + options.projectName + ' --force',
+              'bower install',
+              'npm install',
+              ], 
+              {cwd: 'app'}
+	)
+);                               
                                       
