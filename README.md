@@ -12,8 +12,7 @@ chmod +x bootstrap.sh
 ./bootstrap.sh
 ```
 
-There's a gulp task for bootstrapping a new project. Run it and pass in the parameters
-
+There's a gulp task for bootstrapping a new project. Run it and pass in any parameters you want to change e.g.
 ```sh
 gulp bootstrap --projectName exampleApp --vagrantPortOffset 13 --vagrantGuestAppPort 3000 --dockerImageApp vagrant-node
 ```

@@ -10,6 +10,7 @@ var shell = require('gulp-shell')
 var taskListing = require('gulp-task-listing');
 var util = require('gulp-util');
 var minimist = require('minimist');
+var runSequence = require('run-sequence');
 
 
 var knownOptions = {
@@ -55,6 +56,15 @@ gulp
 
 gulp.task('bootstrap', [ 'git:init', 'bootstrap:devops', 'bootstrap:vagrantfile', 'consul:start', 'bootstrap:app' ]);
 				
+gulp.task('bootstrap2', function(cb) {
+	runSequence('git:init', 
+	            'bootstrap:devops', 
+	            'bootstrap:vagrantfile', 
+	            'consul:start',
+	            'bootstrap:app', 
+	            cb);
+});
+
 gulp.task('bootstrap:clean', shell.task([ 'vagrant destroy -f',
                                           'rm Vagrantfile']))
 
