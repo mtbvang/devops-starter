@@ -34,7 +34,7 @@ installGulp() {
 	fi
 	echo -e "Install local npm packages."
 	npm install --save gulp
-	npm install --save-dev gulp-shell@^0.4.2 gulp-task-listing@^1.0.1 gulp-util@^3.0.6	minimist@^1.1.1
+	npm install --save-dev gulp-shell@^0.4.2 gulp-task-listing@^1.0.1 gulp-util@^3.0.6	minimist@^1.1.1 run-sequence@^1.1.1
 }
 
 downloadGulpFile() {
