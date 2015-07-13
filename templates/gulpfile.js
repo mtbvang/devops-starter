@@ -11,7 +11,6 @@ var taskListing = require('gulp-task-listing');
 var util = require('gulp-util');
 var minimist = require('minimist');
 var runSequence = require('run-sequence');
-var exec = require('child_process').exec;
 var run = require('gulp-run');
 
 

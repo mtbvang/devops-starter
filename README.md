@@ -9,7 +9,8 @@ Download the bootstrap script that installs npm, gulp and their required depende
 ```sh
 curl -O https://raw.githubusercontent.com/mtbvang/devops-starter/master/bootstrap.sh \
 && chmod +x bootstrap.sh \
-&& ./bootstrap.sh
+&& ./bootstrap.sh \
+&& gulp bootstrap --appType node-r
 ```
 
 There's a gulp task for bootstrapping a new project. Run it and pass in any parameters you want to change e.g.
