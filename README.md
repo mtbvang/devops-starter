@@ -12,8 +12,10 @@ curl -O https://raw.githubusercontent.com/mtbvang/devops-starter/master/bootstra
 && ./bootstrap.sh \
 && gulp bootstrap --appType node-r
 ```
+Go get a coffee because it'll take a while to do the magic and the output is not being shown by gulp task.
 
 There's a gulp task for bootstrapping a new project. Run it and pass in any parameters you want to change e.g.
+
 ```sh
 gulp bootstrap --projectName exampleApp --appType node --vagrantPortOffset 0 --vagrantGuestAppPort 1337 
 ```
