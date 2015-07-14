@@ -6,29 +6,34 @@
  */
 
 var gulp = require('gulp');
-var shell = require('gulp-shell')
+var shell = require('gulp-shell') // Used instead of exec for tasks
 var taskListing = require('gulp-task-listing');
 var util = require('gulp-util');
 var minimist = require('minimist');
 var runSequence = require('run-sequence');
-var run = require('gulp-run');
+var exec = require('child_process').exec;	// Used to exec sequential shell tasks
+																					// because gulp-shell is not returning
+																					// control of terminal when calling
+																					// vagrant commands.
 
 
 var knownOptions = {
-  string: 'env',
-  string: 'projectName',
-  string: 'appDirName',
-  string: 'vagrantPortOffset', 
-  string: 'vagrantGuestAppPort',
-  string: 'devopsDirName',
-  string: 'appType',
+  string: 'env',									// NODE_ENV value
+  string: 'projectName',					// Project name.
+  string: 'appDirName',						// Where sails app will be generated
+  string: 'vagrantPortOffset', 		// vagrantGuestApport + vagrantPortOffset =
+																	// host machine app port
+  string: 'vagrantGuestAppPort',	// Port that node app will run on
+  string: 'devopsDirName',				// Dir where devops-starter is cloned to
+  string: 'appType', 							// Type of application to generate.
+																	// [node|node-r]
   default: { env: process.env.NODE_ENV || 'development',
   	projectName: 'devops-starter-testing',
   	appDirName: 'app',
   	vagrantPortOffset: '0',
   	vagrantGuestAppPort: '1337',
   	devopsDirName: 'devops',
-  	appType: 'node'} // [node | node-r]
+  	appType: 'node'} 
 };
 
 var options = minimist(process.argv.slice(2), knownOptions);
@@ -39,7 +44,8 @@ gulp.task('help', taskListing);
 gulp.task('default', [ 'help' ]);
 
 gulp.task('heroku:setBuildPack',
-	shell.task(['heroku buildpacks:set https://github.com/heroku/heroku-buildpack-nodejs#v' + util.env.version + ' -a ' + options.projectName,])
+	shell.task(['heroku buildpacks:set https://github.com/heroku/heroku-buildpack-nodejs#v' 
+	            + util.env.version + ' -a ' + options.projectName,])
 );
 
 gulp.task('deploy:heroku', shell.task([ 'git subtree push --prefix app heroku master', ]));
@@ -47,7 +53,7 @@ gulp.task('deploy:heroku', shell.task([ 'git subtree push --prefix app heroku ma
 gulp.task('consul:rm', shell.task([ "docker stop consul && docker rm consul" ], {ignoreErrors : true}));
 
 gulp.task('consul:start', ['consul:rm'],
-		shell.task(["docker run -d -h node1 --name consul  -p 8300:8300  -p 8301:8301  -p 8301:8301/udp  -p 8302:8302  -p 8302:8302/udp  -p 8400:8400  -p 8500:8500  -p 172.17.42.1:53:53/udp  progrium/consul -server -bootstrap -ui-dir /ui",])
+		shell.task(["docker run -d -h node1 --name consul -p 8300:8300 -p 8301:8301 -p 8301:8301/udp -p 8302:8302 -p 8302:8302/udp -p 8400:8400 -p 8500:8500 -p 172.17.42.1:53:53/udp progrium/consul -server -bootstrap -ui-dir /ui",])
 );
 				
 gulp.task('bootstrap', function(cb) {		
@@ -99,30 +105,40 @@ gulp.task('bootstrap:vagrantfile',
 	)
 );
 
-gulp.task('bootstrap:app', function () {
-   run('vagrant up --no-parallel').exec();
-   run('vagrant ssh ' + options.projectName + '-app -c "cd /vagrant; gulp sails:new"').exec();
-   run('vagrant ssh ' + options.projectName + '-app -c "cd /vagrant; gulp sails:generate:reactjs"').exec();
+gulp.task('bootstrap:app', function (cb) {
+	exec('vagrant up --no-parallel && vagrant ssh ' + options.projectName + 
+		'-app -c "cd /vagrant && gulp sails:new && gulp sails:generate:reactjs"', 
+		{maxBuffer: 1024 * 5000},
+		function (err, stdout, stderr) {
+			console.log(stdout);
+			console.log(stderr);
+			cb(err);
+		});
 });
                                         
-gulp.task('sails:new', 
-	shell.task([ 
-	            'cp ' + options.devopsDirName + '/dotfiles/.sailsrc-karnith .sailsrc',
-	            'sails new ' + options.appDirName, 
-              'cp ' + options.devopsDirName + '/dotfiles/.sailsrc-app app/.sailsrc',
-              'exit'
-              ]
-	)
-);     
-                                    
-gulp.task('sails:generate:reactjs',
-	shell.task([
-	            'sails generate bower --force',
-              'sails generate reactjs ' + options.projectName + ' --force',
-              'bower install',
-              'npm install',
-              ], 
-              {cwd: 'app', ignoreErrors : true}
-	)
-);                              
+gulp.task('sails:new', function(cb) {
+	exec('cp ' + options.devopsDirName + '/dotfiles/.sailsrc-karnith .sailsrc' +
+		' && sails new ' + options.appDirName +
+		' && cp ' + options.devopsDirName + '/dotfiles/.sailsrc-app app/.sailsrc', 
+		{maxBuffer: 1024 * 5000},
+		function (err, stdout, stderr) {
+ 			console.log(stdout);
+ 			console.log(stderr);
+ 			cb(err);
+		});
+});  
+
+gulp.task('sails:generate:reactjs', function(cb) {
+	exec('sails generate bower --force' +
+		' && sails generate reactjs ' + options.projectName + ' --force' +
+		' && bower install' +
+		' && npm install',
+		{maxBuffer: 1024 * 5000, cwd: '/vagrant/app'},
+		function (err, stdout, stderr) {
+ 			console.log(stdout);
+ 			console.log(stderr);
+ 			cb(err);
+		});
+});  
+                          
                                       
