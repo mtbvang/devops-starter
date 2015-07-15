@@ -64,8 +64,8 @@ gulp.task('consul:start', ['consul:rm'],
 );
 				
 gulp.task('bootstrap', function(cb) {		
-	runSequence('git:init', 
-	            'bootstrap:devops', 
+	runSequence('bootstrap:devops', 
+							'git:init', 
 	            'bootstrap:vagrantfile', 
 	            'consul:start',
 	            'bootstrap:app', 
