@@ -16,24 +16,24 @@ init() {
 # Install npm if it isn't
 installNPM() {
 	
-	if ! foobar_loc="$(type -p "npm")" || [ -z "$foobar_loc" ]; then
+	if ! app_installed="$(type -p "npm")" || [ -z "$app_installed" ]; then
 		echo "npm not installed. Installing."
 		sudo apt-get install -yq npm 
 	else
-		echo -e "npm already install."
+		echo -e "npm already install. $(npm --version)"
 	fi
 	
 }
 
 installGulp() {
-	if ! foobar_loc="$(type -p "gulp")" || [ -z "$foobar_loc" ]; then
+	if ! app_installed="$(type -p "gulp")" || [ -z npm"$app_installed" ]; then
 		echo "gulp not installed. Installing."
 		sudo npm install --global gulp 			
 	else
 		echo -e "gulp already installed globally."
 	fi
-	echo -e "Install local npm packages."
-	npm install --save gulp
+	echo -e "Install local npm packages. $(gulp --version)"
+	npm install --save gulp heroku-client
 	npm install --save-dev gulp-shell@^0.4.2 gulp-task-listing@^1.0.1 gulp-util@^3.0.6 minimist@^1.1.1 run-sequence@^1.1.1
 }
 
@@ -44,9 +44,29 @@ downloadGulpFile() {
 	sed -i "s/${SRC}/${DST}/g" gulpfile.js
 }
 
+installVagrant() {
+	if ! app_installed="$(type -p "vagrant")" || [ -z "$app_installed" ]; then
+		echo "vagrant not installed. Installing."
+		sudo apt-get install -yq vagrant 
+	else
+		echo -e "vagrant already install. $(vagrant --version)"
+	fi
+}
+
+installDocker() {
+	if ! app_installed="$(type -p "docker")" || [ -z "$app_installed" ]; then
+		echo "docker not installed. Installing."
+		wget -qO- https://get.docker.com/ | sh 
+		sudo usermod -aG docker $USER
+	else
+		echo -e "docker already install. $(docker --version)"
+	fi
+}
 PROJECT_DIR_NAME=${PWD##*/}
 
 init
 installNPM
 installGulp
 downloadGulpFile
+installVagrant
+installDocker
