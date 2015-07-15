@@ -6,7 +6,7 @@
  */
 
 var gulp = require('gulp');
-var shell = require('gulp-shell') // Used instead of exec for tasks
+var shell = require('gulp-shell'); // Used instead of exec for tasks
 var taskListing = require('gulp-task-listing');
 var util = require('gulp-util');
 var minimist = require('minimist');
@@ -16,6 +16,9 @@ var exec = require('child_process').exec;	// Used to exec sequential shell tasks
 																					// control of terminal when calling
 																					// vagrant commands.
 var Heroku = require('heroku-client');
+var Netrc = require('node-netrc');
+
+var netrc = new Netrc('api.heroku.com');
 
 
 var knownOptions = {
@@ -36,7 +39,7 @@ var knownOptions = {
   	vagrantGuestAppPort: '1337',
   	devopsDirName: 'devops',
   	appType: 'node',
-  	herokuToken: process.env.HEROKU_TOKEN} 
+  	herokuToken: netrc.password} 
 };
 
 var options = minimist(process.argv.slice(2), knownOptions);
