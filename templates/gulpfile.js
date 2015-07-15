@@ -55,7 +55,7 @@ gulp.task('heroku:setBuildPack',
 	            + util.env.version + ' -a ' + options.projectName,])
 );
 
-gulp.task('deploy:heroku', shell.task([ 'git subtree push --prefix app heroku master', ]));
+gulp.task('deploy:heroku', shell.task([ 'git subtree push --prefix app heroku master'], {maxBuffer : 5 * 1024 * 1024}));
 
 gulp.task('consul:rm', shell.task([ "docker stop consul && docker rm consul" ], {ignoreErrors : true}));
 
@@ -167,7 +167,7 @@ gulp.task('bootstrap:app', function (cb) {
 	exec('vagrant up --no-parallel && vagrant ssh ' + options.projectName + 
 		'-app -c "cd /vagrant && gulp sails:new && gulp sails:generate:reactjs "' +
 		'&& git add . && git commit -am "intial commit."', 
-		{maxBuffer: 1024 * 5000},
+		{maxBuffer: 5 * 1024 * 1024},
 		function (err, stdout, stderr) {
 			console.log(stdout);
 			console.log(stderr);
@@ -179,7 +179,7 @@ gulp.task('sails:new', function(cb) {
 	exec('cp ' + options.devopsDirName + '/dotfiles/.sailsrc-karnith .sailsrc' +
 		' && sails new ' + options.appDirName +
 		' && cp ' + options.devopsDirName + '/dotfiles/.sailsrc-app app/.sailsrc', 
-		{maxBuffer: 1024 * 5000},
+		{maxBuffer: 5 * 1024 * 1024},
 		function (err, stdout, stderr) {
  			console.log(stdout);
  			console.log(stderr);
@@ -192,7 +192,7 @@ gulp.task('sails:generate:reactjs', function(cb) {
 		' && sails generate reactjs ' + options.projectName + ' --force' +
 		' && bower install' +
 		' && npm install',
-		{maxBuffer: 1024 * 5000, cwd: '/vagrant/app'},
+		{maxBuffer: 5 * 1024 * 1024, cwd: '/vagrant/app'},
 		function (err, stdout, stderr) {
  			console.log(stdout);
  			console.log(stderr);
