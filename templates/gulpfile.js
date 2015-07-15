@@ -120,7 +120,7 @@ gulp.task('heroku:app:create', function() {
 gulp.task('bootstrap:clean', shell.task(['vagrant destroy -f',
                                           'rm Vagrantfile']));
 
-gulp.task('git:init', shell.task(['git init']));
+gulp.task('git:init', shell.task(['git init', 'cp devops/dotfiles/.gitignore .']));
 
 gulp.task('git:remote:add:heroku', shell.task(['git remote add heroku git@heroku.com:' + options.projectName + '.git']));
 
@@ -164,7 +164,8 @@ gulp.task('bootstrap:vagrantfile',
 
 gulp.task('bootstrap:app', function (cb) {
 	exec('vagrant up --no-parallel && vagrant ssh ' + options.projectName + 
-		'-app -c "cd /vagrant && gulp sails:new && gulp sails:generate:reactjs"', 
+		'-app -c "cd /vagrant && gulp sails:new && gulp sails:generate:reactjs "' +
+		'&& git add . && git commit -am "intial commit."', 
 		{maxBuffer: 1024 * 5000},
 		function (err, stdout, stderr) {
 			console.log(stdout);
