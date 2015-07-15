@@ -4,6 +4,7 @@
  * add all infrastructure and automation related tasks that aren't directly
  * related to building the project code.
  */
+require('array.prototype.find');
 
 var gulp = require('gulp');
 var shell = require('gulp-shell'); // Used instead of exec for tasks
@@ -92,7 +93,7 @@ gulp.task('heroku:apps', function() {
 	  if (!err) {
 	  	util.log(JSON.stringify(res, null, 2));
 	  }else {
-	  	util.log(err.message);
+	  	util.log(JSON.stringify(err, null, 2));
 	  }
 	});
 });
@@ -102,7 +103,7 @@ gulp.task('heroku:app:delete', function() {
 		if (!err) {
 	  	util.log(JSON.stringify(res, null, 2));
 	  }else {
-	  	util.log(err.message);
+	  	util.log(JSON.stringify(err, null, 2));
 	  }				
 	});	
 });
@@ -112,9 +113,46 @@ gulp.task('heroku:app:create', function() {
 		if (!err) {
 	  	util.log(JSON.stringify(res, null, 2));
 	  }else {
-	  	util.log(err.message);
+	  	util.log(JSON.stringify(err, null, 2));
 	  }		
 	});	
+});
+
+gulp.task('heroku:addons:redis:create', function() {
+	heroku.apps(options.projectName).addons().create({plan: 'redistogo:nano'}, function (err, res) {
+		if (!err) {
+	  	util.log(JSON.stringify(res, null, 2));
+	  }else {
+	  	util.log(JSON.stringify(err, null, 2));
+	  }		
+	});	
+});
+
+gulp.task('heroku:addons:redis:delete', function() {
+	heroku.apps(options.projectName).addons().list(function(err, res) {
+		if (!err) {
+	  	util.log('list of addons: ' + JSON.stringify(res, null, 2));
+	  	var redis = res.find(function(element) {	  		
+	  		return element.addon_service.name === 'redistogo';   
+	  	});
+	  	if(redis) {
+	  		heroku.apps(options.projectName).addons(redis.name).delete(function (err, res) {
+		  		if (!err) {
+		  	  	util.log('deleted: ' + JSON.stringify(res, null, 2));
+		  	  }else {
+		  	  	util.log(JSON.stringify(err, null, 2));
+		  	  }		
+		  	});	
+	  	}else {
+	  		util.log('No redis addon found.');
+	  	}
+	  	
+	  }else {
+	  	util.log('list: ' +JSON.stringify(err, null, 2));
+	  }	
+	});
+	
+	
 });
 
 gulp.task('bootstrap:clean', shell.task(['vagrant destroy -f',
