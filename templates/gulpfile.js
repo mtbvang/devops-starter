@@ -27,16 +27,19 @@ var knownOptions = {
   string: 'devopsDirName',				// Dir where devops-starter is cloned to
   string: 'appType', 							// Type of application to generate.
 																	// [node|node-r]
+  string: 'herokuToken',					// Heroku authentication token
   default: { env: process.env.NODE_ENV || 'development',
   	projectName: 'app',
   	appDirName: 'app',
   	vagrantPortOffset: '0',
   	vagrantGuestAppPort: '1337',
   	devopsDirName: 'devops',
-  	appType: 'node'} 
+  	appType: 'node',
+  	herokuToken: process.env.HEROKU_TOKEN} 
 };
 
 var options = minimist(process.argv.slice(2), knownOptions);
+var heroku = new Heroku({token: options.herokuToken});
 
 // Add a task to render the output
 gulp.task('help', taskListing);
@@ -62,13 +65,63 @@ gulp.task('bootstrap', function(cb) {
 	            'bootstrap:vagrantfile', 
 	            'consul:start',
 	            'bootstrap:app', 
+	            'heroku:app:create',
+	            'git:remote:add:heroku',
+	            'deploy:heroku',
 	            cb);
 });
 
+gulp.task('heroku:init', function(cb) {		
+	runSequence('heroku:app:create',
+	            'git:remote:add:heroku',
+	            cb);
+});
+
+gulp.task('heroku:deinit', function(cb) {		
+	runSequence('heroku:app:delete',
+	            'git:remote:remove:heroku',
+	            cb);
+});
+
+gulp.task('heroku:apps', function() {
+	heroku.apps().list(function (err, res) {
+	  if (!err) {
+	  	util.log(JSON.stringify(res, null, 2));
+	  }else {
+	  	util.log(err.message);
+	  }
+	});
+});
+
+gulp.task('heroku:app:delete', function() {
+	heroku.apps(options.projectName).delete(function (err, res) {
+		if (!err) {
+	  	util.log(JSON.stringify(res, null, 2));
+	  }else {
+	  	util.log(err.message);
+	  }				
+	});	
+});
+
+gulp.task('heroku:app:create', function() {
+	heroku.apps().create({name: options.projectName, stack: 'cedar-14'}, function (err, res) {
+		if (!err) {
+	  	util.log(JSON.stringify(res, null, 2));
+	  }else {
+	  	util.log(err.message);
+	  }		
+	});	
+});
+
 gulp.task('bootstrap:clean', shell.task(['vagrant destroy -f',
-                                          'rm Vagrantfile']))
+                                          'rm Vagrantfile']));
 
 gulp.task('git:init', shell.task(['git init']));
+
+gulp.task('git:remote:add:heroku', shell.task(['git remote add heroku git@heroku.com:' + options.projectName + '.git']));
+
+gulp.task('git:remote:remove:heroku', shell.task(['git remote remove heroku']));
+
 
 gulp.task('npm:init', 
 	shell.task([
