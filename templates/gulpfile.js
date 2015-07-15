@@ -15,6 +15,7 @@ var exec = require('child_process').exec;	// Used to exec sequential shell tasks
 																					// because gulp-shell is not returning
 																					// control of terminal when calling
 																					// vagrant commands.
+var Heroku = require('heroku-client');
 
 
 var knownOptions = {
