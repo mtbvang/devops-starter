@@ -39,7 +39,7 @@ installGulp() {
 
 downloadGulpFile() {
 	curl -O https://raw.githubusercontent.com/mtbvang/devops-starter/master/templates/gulpfile.js
-	SRC="projectName: 'app'"
+	SRC="projectName: '[^\t ]*'"
 	DST="projectName: '${PROJECT_DIR_NAME}'"
 	sed -i "s/${SRC}/${DST}/g" gulpfile.js
 }

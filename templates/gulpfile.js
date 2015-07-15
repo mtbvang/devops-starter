@@ -28,7 +28,7 @@ var knownOptions = {
   string: 'appType', 							// Type of application to generate.
 																	// [node|node-r]
   default: { env: process.env.NODE_ENV || 'development',
-  	projectName: 'devops-starter-testing',
+  	projectName: 'app',
   	appDirName: 'app',
   	vagrantPortOffset: '0',
   	vagrantGuestAppPort: '1337',
