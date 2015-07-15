@@ -64,8 +64,8 @@ gulp.task('consul:start', ['consul:rm'],
 );
 				
 gulp.task('bootstrap', function(cb) {		
-	runSequence('bootstrap:devops', 
-							'git:init', 
+	runSequence('git:init',
+							'bootstrap:devops', 
 	            'bootstrap:vagrantfile', 
 	            'consul:start',
 	            'bootstrap:app', 
@@ -120,7 +120,8 @@ gulp.task('heroku:app:create', function() {
 gulp.task('bootstrap:clean', shell.task(['vagrant destroy -f',
                                           'rm Vagrantfile']));
 
-gulp.task('git:init', shell.task(['git init', 'cp devops/dotfiles/.gitignore .']));
+gulp.task('git:init', shell.task(['git init', 
+                                  'curl -O https://raw.githubusercontent.com/mtbvang/dotfiles/master/.gitignore']));
 
 gulp.task('git:remote:add:heroku', shell.task(['git remote add heroku git@heroku.com:' + options.projectName + '.git']));
 
