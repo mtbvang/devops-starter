@@ -39,7 +39,9 @@ installGulp() {
 		gulp-util@^3.0.6 \
 		minimist@^1.1.1 \
 		run-sequence@^1.1.1 \
-		node-netrc
+		node-netrc \
+		array.prototype.find@^1.0.0 \
+		gulp-help@^1.6.0
 }
 
 downloadGulpFile() {

@@ -6,7 +6,7 @@
  */
 require('array.prototype.find');
 
-var gulp = require('gulp');
+var gulp = require('gulp-help')(require('gulp'));
 var shell = require('gulp-shell'); // Used instead of exec for tasks
 var taskListing = require('gulp-task-listing');
 var util = require('gulp-util');
@@ -47,7 +47,7 @@ var options = minimist(process.argv.slice(2), knownOptions);
 var heroku = new Heroku({token: options.herokuToken});
 
 // Add a task to render the output
-gulp.task('help', taskListing);
+gulp.task('tasks', 'Lists tasks', taskListing);
 
 gulp.task('default', [ 'help' ]);
 
@@ -64,7 +64,7 @@ gulp.task('consul:start', ['consul:rm'],
 		shell.task(["docker run -d -h node1 --name consul -p 8300:8300 -p 8301:8301 -p 8301:8301/udp -p 8302:8302 -p 8302:8302/udp -p 8400:8400 -p 8500:8500 -p 172.17.42.1:53:53/udp progrium/consul -server -bootstrap -ui-dir /ui",])
 );
 				
-gulp.task('bootstrap', function(cb) {		
+gulp.task('bootstrap', 'Go from git init to heroku deploy of a sails, reactjs stack.',  function(cb) {		
 	runSequence('git:init',
 							'bootstrap:devops', 
 	            'bootstrap:vagrantfile', 
