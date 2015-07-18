@@ -4,9 +4,10 @@
  * add all infrastructure and automation related tasks that aren't directly
  * related to building the project code.
  */
+require('array.prototype.find');
 
-var gulp = require('gulp');
-var shell = require('gulp-shell') // Used instead of exec for tasks
+var gulp = require('gulp-help')(require('gulp'));
+var shell = require('gulp-shell'); // Used instead of exec for tasks
 var taskListing = require('gulp-task-listing');
 var util = require('gulp-util');
 var minimist = require('minimist');
@@ -15,6 +16,10 @@ var exec = require('child_process').exec;	// Used to exec sequential shell tasks
 																					// because gulp-shell is not returning
 																					// control of terminal when calling
 																					// vagrant commands.
+var Heroku = require('heroku-client');
+var Netrc = require('node-netrc');
+
+var netrc = new Netrc('api.heroku.com');
 
 
 var knownOptions = {
@@ -27,19 +32,22 @@ var knownOptions = {
   string: 'devopsDirName',				// Dir where devops-starter is cloned to
   string: 'appType', 							// Type of application to generate.
 																	// [node|node-r]
+  string: 'herokuToken',					// Heroku authentication token
   default: { env: process.env.NODE_ENV || 'development',
-  	projectName: 'devops-starter-testing',
+  	projectName: 'app',
   	appDirName: 'app',
   	vagrantPortOffset: '0',
   	vagrantGuestAppPort: '1337',
   	devopsDirName: 'devops',
-  	appType: 'node'} 
+  	appType: 'node',
+  	herokuToken: netrc.password} 
 };
 
 var options = minimist(process.argv.slice(2), knownOptions);
+var heroku = new Heroku({token: options.herokuToken});
 
 // Add a task to render the output
-gulp.task('help', taskListing);
+gulp.task('tasks', 'Lists tasks', taskListing);
 
 gulp.task('default', [ 'help' ]);
 
@@ -48,7 +56,7 @@ gulp.task('heroku:setBuildPack',
 	            + util.env.version + ' -a ' + options.projectName,])
 );
 
-gulp.task('deploy:heroku', shell.task([ 'git subtree push --prefix app heroku master', ]));
+gulp.task('deploy:heroku', shell.task([ 'git subtree push --prefix app heroku master'], {maxBuffer : 5 * 1024 * 1024}));
 
 gulp.task('consul:rm', shell.task([ "docker stop consul && docker rm consul" ], {ignoreErrors : true}));
 
@@ -56,19 +64,107 @@ gulp.task('consul:start', ['consul:rm'],
 		shell.task(["docker run -d -h node1 --name consul -p 8300:8300 -p 8301:8301 -p 8301:8301/udp -p 8302:8302 -p 8302:8302/udp -p 8400:8400 -p 8500:8500 -p 172.17.42.1:53:53/udp progrium/consul -server -bootstrap -ui-dir /ui",])
 );
 				
-gulp.task('bootstrap', function(cb) {		
-	runSequence('git:init', 
-	            'bootstrap:devops', 
+gulp.task('bootstrap', 'Go from git init to heroku deploy of a sails, reactjs stack.',  function(cb) {		
+	runSequence('git:init',
+							'bootstrap:devops', 
 	            'bootstrap:vagrantfile', 
 	            'consul:start',
 	            'bootstrap:app', 
+	            'heroku:app:create',
+	            'git:remote:add:heroku',
+	            'deploy:heroku',
 	            cb);
 });
 
-gulp.task('bootstrap:clean', shell.task(['vagrant destroy -f',
-                                          'rm Vagrantfile']))
+gulp.task('heroku:init', function(cb) {		
+	runSequence('heroku:app:create',
+	            'git:remote:add:heroku',
+	            cb);
+});
 
-gulp.task('git:init', shell.task(['git init']));
+gulp.task('heroku:deinit', function(cb) {		
+	runSequence('heroku:app:delete',
+	            'git:remote:remove:heroku',
+	            cb);
+});
+
+gulp.task('heroku:apps', function() {
+	heroku.apps().list(function (err, res) {
+	  if (!err) {
+	  	util.log(JSON.stringify(res, null, 2));
+	  }else {
+	  	util.log(JSON.stringify(err, null, 2));
+	  }
+	});
+});
+
+gulp.task('heroku:app:delete', function() {
+	heroku.apps(options.projectName).delete(function (err, res) {
+		if (!err) {
+	  	util.log(JSON.stringify(res, null, 2));
+	  }else {
+	  	util.log(JSON.stringify(err, null, 2));
+	  }				
+	});	
+});
+
+gulp.task('heroku:app:create', function() {
+	heroku.apps().create({name: options.projectName, stack: 'cedar-14'}, function (err, res) {
+		if (!err) {
+	  	util.log(JSON.stringify(res, null, 2));
+	  }else {
+	  	util.log(JSON.stringify(err, null, 2));
+	  }		
+	});	
+});
+
+gulp.task('heroku:addons:redis:create', function() {
+	heroku.apps(options.projectName).addons().create({plan: 'redistogo:nano'}, function (err, res) {
+		if (!err) {
+	  	util.log(JSON.stringify(res, null, 2));
+	  }else {
+	  	util.log(JSON.stringify(err, null, 2));
+	  }		
+	});	
+});
+
+gulp.task('heroku:addons:redis:delete', function() {
+	heroku.apps(options.projectName).addons().list(function(err, res) {
+		if (!err) {
+	  	util.log('list of addons: ' + JSON.stringify(res, null, 2));
+	  	var redis = res.find(function(element) {	  		
+	  		return element.addon_service.name === 'redistogo';   
+	  	});
+	  	if(redis) {
+	  		heroku.apps(options.projectName).addons(redis.name).delete(function (err, res) {
+		  		if (!err) {
+		  	  	util.log('deleted: ' + JSON.stringify(res, null, 2));
+		  	  }else {
+		  	  	util.log(JSON.stringify(err, null, 2));
+		  	  }		
+		  	});	
+	  	}else {
+	  		util.log('No redis addon found.');
+	  	}
+	  	
+	  }else {
+	  	util.log('list: ' +JSON.stringify(err, null, 2));
+	  }	
+	});
+	
+	
+});
+
+gulp.task('bootstrap:clean', shell.task(['vagrant destroy -f',
+                                          'rm Vagrantfile']));
+
+gulp.task('git:init', shell.task(['git init', 
+                                  'curl -O https://raw.githubusercontent.com/mtbvang/dotfiles/master/.gitignore']));
+
+gulp.task('git:remote:add:heroku', shell.task(['git remote add heroku git@heroku.com:' + options.projectName + '.git']));
+
+gulp.task('git:remote:remove:heroku', shell.task(['git remote remove heroku']));
+
 
 gulp.task('npm:init', 
 	shell.task([
@@ -107,8 +203,9 @@ gulp.task('bootstrap:vagrantfile',
 
 gulp.task('bootstrap:app', function (cb) {
 	exec('vagrant up --no-parallel && vagrant ssh ' + options.projectName + 
-		'-app -c "cd /vagrant && gulp sails:new && gulp sails:generate:reactjs"', 
-		{maxBuffer: 1024 * 5000},
+		'-app -c "cd /vagrant && gulp sails:new && gulp sails:generate:reactjs "' +
+		'&& git add . && git commit -am "intial commit."', 
+		{maxBuffer: 5 * 1024 * 1024},
 		function (err, stdout, stderr) {
 			console.log(stdout);
 			console.log(stderr);
@@ -120,7 +217,7 @@ gulp.task('sails:new', function(cb) {
 	exec('cp ' + options.devopsDirName + '/dotfiles/.sailsrc-karnith .sailsrc' +
 		' && sails new ' + options.appDirName +
 		' && cp ' + options.devopsDirName + '/dotfiles/.sailsrc-app app/.sailsrc', 
-		{maxBuffer: 1024 * 5000},
+		{maxBuffer: 5 * 1024 * 1024},
 		function (err, stdout, stderr) {
  			console.log(stdout);
  			console.log(stderr);
@@ -133,7 +230,7 @@ gulp.task('sails:generate:reactjs', function(cb) {
 		' && sails generate reactjs ' + options.projectName + ' --force' +
 		' && bower install' +
 		' && npm install',
-		{maxBuffer: 1024 * 5000, cwd: '/vagrant/app'},
+		{maxBuffer: 5 * 1024 * 1024, cwd: '/vagrant/app'},
 		function (err, stdout, stderr) {
  			console.log(stdout);
  			console.log(stderr);

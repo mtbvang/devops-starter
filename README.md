@@ -1,8 +1,24 @@
 # devops-starter
 
-A quick way to add devops related tooling to projects. 
+A quick way to add devops related tooling to projects. Only tested on Ubuntu 14.04.
 
 ## Getting started
+
+### Requirements
+
+* Ubuntu 14.04
+* Vagrant 1.7.2
+* Docker 1.6.2
+* npm 2.7.4
+* gulp 3.9.0
+
+The bootstrap.sh file in the Up and running section should check for and install the above tools for ubuntu 14.04.
+
+* heroku token 
+
+Needed to deploy to heroku setup an account and get the token. 
+
+### Up and running
 
 Download the bootstrap script that installs npm, gulp and their required dependencies and run it using:
 
@@ -10,7 +26,7 @@ Download the bootstrap script that installs npm, gulp and their required depende
 curl -O https://raw.githubusercontent.com/mtbvang/devops-starter/master/bootstrap.sh \
 && chmod +x bootstrap.sh \
 && ./bootstrap.sh \
-&& gulp bootstrap --appType node-r
+&& gulp bootstrap --appType node-r --herokuToken <token>
 ```
 Go get a coffee because it'll take a while to do the magic and the output is not being shown by gulp task.
 
