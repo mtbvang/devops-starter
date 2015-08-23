@@ -41,7 +41,8 @@ installGulp() {
 		run-sequence@^1.1.1 \
 		node-netrc \
 		array.prototype.find@^1.0.0 \
-		gulp-help@^1.6.0
+		gulp-help@^1.6.0 \
+		redis-url@^1.2.0
 }
 
 downloadGulpFile() {
